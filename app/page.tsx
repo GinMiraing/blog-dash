@@ -1,6 +1,8 @@
 import CommentCard from "@/components/CommentCard";
 import Header from "@/components/Header";
+import Pagination from "@/components/Pagination";
 import Sidebar from "@/components/Sidebar";
+import { Toaster } from "@/components/ui/toaster";
 
 export default function Home() {
   return (
@@ -16,8 +18,10 @@ export default function Home() {
             <CommentCard />
             <CommentCard />
           </div>
+          <Pagination />
         </div>
       </main>
+      <Toaster />
     </>
   );
 }

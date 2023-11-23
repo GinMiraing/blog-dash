@@ -40,9 +40,16 @@ import {
   HoverCardTrigger,
 } from "../ui/hover-card";
 import { Input } from "../ui/input";
+import { useToast } from "../ui/use-toast";
 
 const EditCommentSchema = z.object({
   nick: z.string().min(1),
+  email: z.string().email(),
+  link: z.string().url().optional(),
+  content: z.string().min(1),
+  isAdmin: z.boolean(),
+  isHidden: z.boolean(),
+  path: z.string(),
 });
 
 const reducer = (
@@ -84,6 +91,8 @@ const CommentCard: React.FC = () => {
     openDeleteDialog: false,
   });
 
+  const { toast } = useToast();
+
   return (
     <>
       <div className="rounded-lg border">
@@ -122,14 +131,21 @@ const CommentCard: React.FC = () => {
         </div>
         <div className="flex justify-end space-x-2 bg-gray-50 px-4 py-4">
           <Button
-            onClick={() => dispatch({ type: "OpenEditDialog" })}
-            className="bg-blue-400 text-white hover:bg-blue-500"
+            // onClick={() => dispatch({ type: "OpenEditDialog" })}
+            onClick={() => {
+              toast({
+                title: "test toast",
+                description: "this is a test toast",
+                duration: 3000,
+              });
+            }}
+            variant="access"
           >
             Edit
           </Button>
           <Button
             onClick={() => dispatch({ type: "OpenDeleteDialog" })}
-            className="bg-red-400 text-white hover:bg-red-500"
+            variant="danger"
           >
             Delete
           </Button>
@@ -153,9 +169,6 @@ const EditDialog: React.FC<{
 }> = ({ open, setOpen }) => {
   const form = useForm<z.infer<typeof EditCommentSchema>>({
     resolver: zodResolver(EditCommentSchema),
-    defaultValues: {
-      nick: "ABC",
-    },
   });
 
   const onSubmit = (values: z.infer<typeof EditCommentSchema>) => {
@@ -188,9 +201,12 @@ const EditDialog: React.FC<{
               name="nick"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>nick</FormLabel>
+                  <FormLabel>Nick</FormLabel>
                   <FormControl>
-                    <Input {...field} />
+                    <Input
+                      placeholder="Nick"
+                      {...field}
+                    />
                   </FormControl>
                   <FormMessage>
                     {form.formState.errors?.nick?.message}
@@ -198,10 +214,47 @@ const EditDialog: React.FC<{
                 </FormItem>
               )}
             ></FormField>
+            <FormField
+              control={form.control}
+              name="email"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Email</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="Email"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage>
+                    {form.formState.errors?.email?.message}
+                  </FormMessage>
+                </FormItem>
+              )}
+            ></FormField>
+            <FormField
+              control={form.control}
+              name="link"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Link</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="Link"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage>
+                    {form.formState.errors?.link?.message}
+                  </FormMessage>
+                </FormItem>
+              )}
+            ></FormField>
             <DialogFooter>
               <Button
                 type="submit"
-                className="mt-6 bg-blue-400 text-white hover:bg-blue-500"
+                variant="access"
+                className="mt-6"
               >
                 Submit
               </Button>
@@ -237,12 +290,8 @@ const DeleteDialog: React.FC<{
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel className="bg-blue-400 text-white hover:bg-blue-500 hover:text-white">
-            Cancel
-          </AlertDialogCancel>
-          <AlertDialogAction className="bg-red-400 text-white hover:bg-red-500">
-            Continue
-          </AlertDialogAction>
+          <AlertDialogCancel>Cancel</AlertDialogCancel>
+          <AlertDialogAction>Continue</AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
